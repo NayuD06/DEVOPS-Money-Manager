@@ -1,0 +1,70 @@
+name: Continuous Integration (CI)
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  test-backend:
+    name: 🧪 Unit Test Server API
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: 📦 Install Server Dependencies
+        working-directory: ./server
+        run: npm ci
+
+      - name: 🚀 Run Server Unit Tests (Jest & Supertest)
+        working-directory: ./server
+        env:
+          MONGO_URI: mongodb://localhost:27017/spendwise_test
+          NODE_ENV: test
+        run: npm test
+
+  build-frontend:
+    name: 🏗️ Build Frontend Client
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: 📦 Install Client Dependencies
+        working-directory: ./client
+        run: npm ci
+
+      - name: 🛠️ Build Client Production Bundle (Vite)
+        working-directory: ./client
+        run: npm run build
+
+      - name: 💾 Upload Frontend Artifact (dist)
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-dist
+          path: client/dist/
+          retention-days: 1

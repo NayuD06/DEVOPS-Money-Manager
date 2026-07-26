@@ -1,0 +1,27 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  group_by: ['alertname', 'severity']
+  group_wait: 10s
+  group_interval: 1m
+  repeat_interval: 1h
+  receiver: 'telegram_bot'
+
+receivers:
+  - name: 'telegram_bot'
+    telegram_configs:
+      - bot_token: 'YOUR_TELEGRAM_BOT_TOKEN_HERE' # Nhập Token Bot từ BotFather vào đây khi chạy trên VPS
+        chat_id: 1234567890 # Nhập Chat ID của bạn vào đây (số nguyên, ví dụ -100xxxxxxxxxx cho group)
+        parse_mode: 'HTML'
+        message: |
+          {{ range .Alerts }}
+          {{ if eq .Status "firing" }}🔥 <b>[FIRING] {{ .Labels.alertname }}</b>
+          <b>Mức độ:</b> <code>{{ .Labels.severity }}</code>
+          <b>Chi tiết:</b> {{ .Annotations.description }}
+          <b>💡 Hành động khắc phục ngay:</b>
+          <code>{{ .Annotations.action }}</code>
+          {{ else }}✅ <b>[RESOLVED] {{ .Labels.alertname }}</b>
+          💚 Sự cố <b>{{ .Labels.alertname }}</b> đã được xử lý xong, hệ thống SpendWise hoạt động ổn định trở lại!
+          {{ end }}
+          {{ end }}

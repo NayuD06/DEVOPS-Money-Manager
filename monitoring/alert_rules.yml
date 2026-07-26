@@ -1,0 +1,46 @@
+groups:
+  - name: spendwise_devops_alerts
+    rules:
+      # 1. Cảnh báo khi Ứng dụng / API sập (Bắt buộc diễn tập demo)
+      - alert: SpendwiseApiDown
+        expr: up{job="spendwise_api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "🚨 API SpendWise (Sổ Thu Chi) đã sập!"
+          description: "Hệ thống giám sát không thể kết nối tới endpoint /metrics của ứng dụng SpendWise trong hơn 1 phút qua. Người dùng có thể gặp lỗi khi truy cập."
+          action: "Vào SSH kiểm tra log và khởi động lại: pm2 status && pm2 restart spendwise-api"
+
+      # 2. Cảnh báo khi CPU VPS hoạt động ở mức cao kéo dài
+      - alert: VpsHighCpuUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 85
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "⚠️ CPU VPS quá tải (>85%)"
+          description: "Máy chủ VPS đang phải xử lý lượng tải CPU cực cao (vượt ngưỡng 85%) liên tục trong 3 phút qua. Có rủi ro phản hồi API bị chậm."
+          action: "Vào SSH kiểm tra tiến trình tốn tài nguyên nhất: htop hoặc ps aux --sort=-%cpu | head -n 10"
+
+      # 3. Cảnh báo khi Ổ cứng VPS sắp đầy
+      - alert: VpsDiskAlmostFull
+        expr: (1 - (node_filesystem_avail_bytes{mountpoint="/"}/node_filesystem_size_bytes{mountpoint="/"})) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "💾 Ổ cứng VPS sắp đầy (>85%)"
+          description: "Dung lượng lưu trữ trên phân vùng gốc (/) đã sử dụng vượt 85%. Nếu ổ cứng đầy 100%, MongoDB và app có thể bị sập hoàn toàn."
+          action: "Vào SSH dọn dẹp log hoặc docker image cũ: df -h / && ncdu / hoặc docker system prune -af"
+
+      # 4. Cảnh báo bổ sung: Bộ nhớ RAM cạn kiệt
+      - alert: VpsHighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "🧠 RAM VPS sắp cạn kiệt (>85%)"
+          description: "Bộ nhớ RAM khả dụng trên VPS chỉ còn dưới 15% trong 3 phút qua. Nguy cơ bị OOM (Out of Memory) killer tràn tiến trình."
+          action: "Vào SSH kiểm tra tiến trình ăn RAM: free -h && ps aux --sort=-%mem | head -n 10"

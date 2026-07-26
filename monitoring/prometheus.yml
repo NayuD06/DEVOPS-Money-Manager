@@ -1,0 +1,25 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - 'alert_rules.yml'
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - 'alertmanager:9093'
+
+scrape_configs:
+  # 1. Scrape Node Exporter (Metrics máy chủ VPS: CPU, RAM, Disk)
+  - job_name: 'node_exporter'
+    static_configs:
+      - targets: ['node-exporter:9100', '127.0.0.1:9100']
+
+  # 2. Scrape SpendWise API (Metrics ứng dụng Node.js / Express từ prom-client ở port 5000)
+  - job_name: 'spendwise_api'
+    metrics_path: '/metrics'
+    static_configs:
+      # Dùng host.docker.internal (hoặc 172.17.0.1 / localhost) để Prometheus kết nối ra PM2 app trên host Linux
+      - targets: ['host.docker.internal:5000', '172.17.0.1:5000', '127.0.0.1:5000']
