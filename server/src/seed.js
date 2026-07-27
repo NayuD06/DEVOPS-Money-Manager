@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const User = require('./models/User');
 const Expense = require('./models/Expense');
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/spendwise';
+const MONGODB_URI = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/spendwise';
 
 function getDateInCurrentMonth(day) {
   const now = new Date();

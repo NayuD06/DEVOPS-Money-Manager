@@ -6,6 +6,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -14,6 +15,29 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    // ── Kiểm tra lỗi (Validation) bằng Javascript chuyên nghiệp thay cho HTML mặc định ──
+    if (!isLogin && (!username || username.trim().length < 2)) {
+      setError('❌ Tên người dùng phải có ít nhất 2 ký tự!');
+      return;
+    }
+    if (!email || !email.trim()) {
+      setError('❌ Vui lòng nhập địa chỉ Email!');
+      return;
+    }
+    if (!/^\S+@\S+\.\S+$/.test(email.trim())) {
+      setError('❌ Định dạng Email không hợp lệ (ví dụ: name@example.com)!');
+      return;
+    }
+    if (!password) {
+      setError('❌ Vui lòng nhập mật khẩu bảo mật!');
+      return;
+    }
+    if (password.length < 6) {
+      setError('❌ Mật khẩu bảo mật phải có tối thiểu 6 ký tự!');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -36,7 +60,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose} aria-label="Đóng">✕</button>
+        <button className="modal-close" onClick={onClose} aria-label="Đóng" title="Đóng">✕</button>
         
         <div className="auth-header">
           <div className="auth-logo">📘✨</div>
@@ -61,9 +85,9 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
           </button>
         </div>
 
-        {error && <div className="auth-error-alert">⚠️ {error}</div>}
+        {error && <div className="auth-error-alert" style={{ animation: 'fadeIn 0.2s ease' }}>{error}</div>}
 
-        <form onSubmit={handleSubmit} className="auth-form">
+        <form onSubmit={handleSubmit} className="auth-form" noValidate>
           {!isLogin && (
             <div className="form-group">
               <label className="form-label" htmlFor="username">Tên người dùng <span className="req">*</span></label>
@@ -73,8 +97,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                 type="text"
                 placeholder="Ví dụ: Nguyễn Văn An"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required={!isLogin}
+                onChange={(e) => { setUsername(e.target.value); if (error) setError(''); }}
               />
             </div>
           )}
@@ -87,23 +110,44 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
               type="email"
               placeholder="name@example.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
+              onChange={(e) => { setEmail(e.target.value); if (error) setError(''); }}
             />
           </div>
 
           <div className="form-group">
             <label className="form-label" htmlFor="password">Mật khẩu <span className="req">*</span></label>
-            <input
-              id="password"
-              className="form-control"
-              type="password"
-              placeholder="Tối thiểu 6 ký tự..."
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-            />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <input
+                id="password"
+                className="form-control"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Tối thiểu 6 ký tự..."
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); if (error) setError(''); }}
+                style={{ paddingRight: '44px', width: '100%' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '1.15rem',
+                  color: 'var(--c-text-3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '4px',
+                  transition: 'transform 0.2s ease',
+                }}
+                title={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+              >
+                {showPassword ? '🙈' : '👁️'}
+              </button>
+            </div>
           </div>
 
           <button type="submit" className="auth-submit" disabled={loading}>
