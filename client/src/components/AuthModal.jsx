@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { login, register } from '../api/auth';
 
 export default function AuthModal({ isOpen, onClose, onSuccess }) {
@@ -9,6 +9,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const backdropMouseDownRef = useRef(false);
 
   if (!isOpen) return null;
 
@@ -58,7 +59,22 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div
+      className="modal-backdrop"
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) {
+          backdropMouseDownRef.current = true;
+        } else {
+          backdropMouseDownRef.current = false;
+        }
+      }}
+      onMouseUp={(e) => {
+        if (e.target === e.currentTarget && backdropMouseDownRef.current) {
+          onClose();
+        }
+        backdropMouseDownRef.current = false;
+      }}
+    >
       <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
         <button className="modal-close" onClick={onClose} aria-label="Đóng" title="Đóng">✕</button>
         

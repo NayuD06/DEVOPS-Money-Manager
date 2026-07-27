@@ -217,21 +217,21 @@ export default function Sidebar({
           <button
             className={`sidebar__item ${activeCategory === '' ? 'active' : ''}`}
             onClick={() => onCategory('')}
-            style={{ marginBottom: 2 }}
+            style={{ marginBottom: 4, padding: '9px 12px', fontSize: '0.88rem' }}
           >
             <span className="icon">🗂️</span>
             <span>Tất cả danh mục</span>
           </button>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2, maxHeight: '220px', overflowY: 'auto', paddingRight: '4px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2, maxHeight: 'calc(100vh - 380px)', minHeight: '180px', overflowY: 'auto', paddingRight: '4px' }}>
             {currentCategories.map(cat => (
               <button
                 key={cat.name}
                 className={`sidebar__item ${activeCategory === cat.name ? 'active' : ''}`}
                 onClick={() => onCategory(activeCategory === cat.name ? '' : cat.name)}
-                style={{ position: 'relative' }}
+                style={{ position: 'relative', padding: '8px 12px', fontSize: '0.88rem' }}
               >
-                <span className="icon">{cat.icon}</span>
+                <span className="icon" style={{ fontSize: '1.1rem', width: '22px' }}>{cat.icon}</span>
                 <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cat.name}</span>
                 <span style={{ width: 8, height: 8, borderRadius: '50%', background: cat.color, display: 'inline-block', flexShrink: 0 }} />
                 {cat.isCustom && (
@@ -253,7 +253,7 @@ export default function Sidebar({
           <button
             onClick={() => setIsModalOpen(true)}
             className="btn btn-ghost"
-            style={{ marginTop: 10, width: '100%', padding: '9px 12px', fontSize: '0.86rem', color: 'var(--c-accent)', border: '1px dashed var(--c-border2)' }}
+            style={{ marginTop: 8, width: '100%', padding: '9px 12px', fontSize: '0.85rem', color: 'var(--c-accent)', border: '1px dashed var(--c-border2)', borderRadius: 'var(--radius-sm)', fontWeight: 600 }}
           >
             ➕ Thêm Danh Mục Tùy Chọn
           </button>
