@@ -97,6 +97,28 @@ export default function App() {
           />
         </main>
       </div>
+      
+      {user && (
+        <nav className="mobile-nav">
+          <button className={`mobile-nav__btn ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setTab('home')}>
+            <span className="icon">🏠</span>
+            <span className="label">Trang chủ</span>
+          </button>
+          <button className={`mobile-nav__btn ${activeTab === 'overview' ? 'active' : ''}`} onClick={() => setTab('overview')}>
+            <span className="icon">📊</span>
+            <span className="label">Tổng quan</span>
+          </button>
+          <button className={`mobile-nav__btn ${activeTab === 'ledger' ? 'active' : ''}`} onClick={() => setTab('ledger')}>
+            <span className="icon">📝</span>
+            <span className="label">Ghi chép</span>
+          </button>
+          <button className={`mobile-nav__btn ${activeTab === 'budget' ? 'active' : ''}`} onClick={() => setTab('budget')}>
+            <span className="icon">🎯</span>
+            <span className="label">Hạn mức</span>
+          </button>
+        </nav>
+      )}
+
       <Toast toasts={toasts} onRemove={removeToast} />
       <AuthModal
         isOpen={showAuthModal}
