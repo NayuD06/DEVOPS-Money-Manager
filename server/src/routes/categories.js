@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Category = require('../models/Category');
-const { protect } = require('../middleware/auth');
+const { authMiddleware } = require('../middleware/auth');
 
 // Lấy danh sách danh mục tùy chỉnh của user
-router.get('/', protect, async (req, res) => {
+router.get('/', authMiddleware, async (req, res) => {
   try {
     const categories = await Category.find({ userId: req.user._id });
     res.json(categories);
@@ -14,7 +14,7 @@ router.get('/', protect, async (req, res) => {
 });
 
 // Thêm một danh mục tùy chỉnh mới
-router.post('/', protect, async (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
   try {
     const { name, icon, color, type } = req.body;
     
@@ -43,7 +43,7 @@ router.post('/', protect, async (req, res) => {
 });
 
 // Xóa danh mục tùy chỉnh
-router.delete('/:id', protect, async (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res) => {
   try {
     const category = await Category.findOne({ _id: req.params.id, userId: req.user._id });
     if (!category) {
