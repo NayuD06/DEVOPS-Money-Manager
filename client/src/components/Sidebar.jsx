@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { fetchCategories, createCategory, deleteCategory } from '../api/categories';
 
 export const EXPENSE_CATEGORIES = [
   { name: 'Ăn uống',    icon: '🍜', color: '#ef4444' },
@@ -89,6 +90,19 @@ export default function Sidebar({
   const [error, setError] = useState('');
 
   useEffect(() => {
+    async function syncCategories() {
+      try {
+        const token = localStorage.getItem('spendwise_token');
+        if (!token) return;
+        const apiCats = await fetchCategories();
+        localStorage.setItem('finflow_custom_cats', JSON.stringify(apiCats));
+        window.dispatchEvent(new Event('finflow_categories_changed'));
+      } catch (err) {
+        console.error('Lỗi đồng bộ danh mục:', err.message);
+      }
+    }
+    syncCategories();
+
     function handleSync() {
       setCustomCats(getCustomCategories());
     }
@@ -102,7 +116,7 @@ export default function Sidebar({
     ? getCategoriesByType('expense')
     : getCategoriesByType('');
 
-  function handleCreateCategory(e) {
+  async function handleCreateCategory(e) {
     e.preventDefault();
     if (!catName.trim()) {
       setError('Vui lòng nhập tên danh mục!');
@@ -112,23 +126,44 @@ export default function Sidebar({
       setError('Tên danh mục tối đa 30 ký tự!');
       return;
     }
-    saveCustomCategory({
-      name: catName.trim(),
-      icon: catIcon,
-      color: catColor,
-      type: catType,
-      isCustom: true
-    });
-    setCatName('');
-    setError('');
-    setIsModalOpen(false);
+    
+    try {
+      const newCat = await createCategory({
+        name: catName.trim(),
+        icon: catIcon,
+        color: catColor,
+        type: catType,
+        isCustom: true
+      });
+      
+      const custom = getCustomCategories();
+      const updated = [...custom.filter(c => c.name !== newCat.name), newCat];
+      localStorage.setItem('finflow_custom_cats', JSON.stringify(updated));
+      window.dispatchEvent(new Event('finflow_categories_changed'));
+      
+      setCatName('');
+      setError('');
+      setIsModalOpen(false);
+    } catch (err) {
+      setError(err.message);
+    }
   }
 
-  function handleDeleteCustom(e, name) {
+  async function handleDeleteCustom(e, cat) {
     e.stopPropagation();
-    if (window.confirm(`Bạn có chắc chắn muốn xóa danh mục tự chọn "${name}" không?`)) {
-      deleteCustomCategory(name);
-      if (activeCategory === name) onCategory('');
+    if (window.confirm(`Bạn có chắc chắn muốn xóa danh mục tự chọn "${cat.name}" không?`)) {
+      try {
+        if (cat._id) {
+          await deleteCategory(cat._id);
+        }
+        const custom = getCustomCategories();
+        const updated = custom.filter(c => c.name !== cat.name);
+        localStorage.setItem('finflow_custom_cats', JSON.stringify(updated));
+        window.dispatchEvent(new Event('finflow_categories_changed'));
+        if (activeCategory === cat.name) onCategory('');
+      } catch (err) {
+        alert('Lỗi xóa danh mục: ' + err.message);
+      }
     }
   }
 
@@ -236,7 +271,7 @@ export default function Sidebar({
                 <span style={{ width: 8, height: 8, borderRadius: '50%', background: cat.color, display: 'inline-block', flexShrink: 0 }} />
                 {cat.isCustom && (
                   <span
-                    onClick={e => handleDeleteCustom(e, cat.name)}
+                    onClick={e => handleDeleteCustom(e, cat)}
                     style={{
                       marginLeft: 4, padding: '2px 6px', fontSize: '0.75rem', color: 'var(--c-text-3)',
                       borderRadius: '4px', cursor: 'pointer', background: 'var(--c-surface)'

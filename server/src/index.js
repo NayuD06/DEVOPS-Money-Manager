@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const { metricsMiddleware, register } = require('./middleware/metrics');
 const authRouter = require('./routes/auth');
 const expensesRouter = require('./routes/expenses');
+const categoriesRouter = require('./routes/categories');
 
 const app  = express();
 const PORT = process.env.PORT || 5000;
@@ -21,6 +22,7 @@ app.use(metricsMiddleware);
 // ── Routes ────────────────────────────────────────────────
 app.use('/api/auth', authRouter);
 app.use('/api/expenses', expensesRouter);
+app.use('/api/categories', categoriesRouter);
 
 // Health check — used by pipeline + Prometheus
 app.get('/api/health', (req, res) => {
