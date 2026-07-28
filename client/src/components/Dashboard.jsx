@@ -131,14 +131,14 @@ export default function Dashboard({ activeTab = 'home', onTab, month, category, 
     try {
       onToast('info', 'Đang tạo báo cáo Excel (CSV)...', 'Vui lòng chờ trong giây lát');
       const res = await fetchExpenses({ month, category, type, page: 1, limit: 10000 });
-      if (!res.data || res.data.length === 0) {
+      if (!res.expenses || res.expenses.length === 0) {
         return onToast('error', 'Không có dữ liệu', 'Không có giao dịch nào để xuất ra file.');
       }
       
       // Tạo tiêu đề (Header) cho file CSV (Thêm BOM \uFEFF để Excel hiển thị tiếng Việt có dấu chuẩn xác)
       const csvRows = ['\uFEFFNgày,Loại,Danh mục,Mô tả & Ghi chú,Số tiền (VNĐ)'];
       
-      res.data.forEach(exp => {
+      res.expenses.forEach(exp => {
         const date = new Date(exp.date).toLocaleDateString('vi-VN');
         const expType = exp.type === 'income' ? 'Thu' : 'Chi';
         const cat = `"${exp.category}"`;
