@@ -43,3 +43,13 @@ export async function fetchCurrentUser() {
   const data = await res.json();
   return data.user;
 }
+
+export async function updateProfile(formData) {
+  const token = localStorage.getItem('spendwise_token');
+  const res = await fetch(`${BASE}/profile`, {
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData, // FormData chứa multipart data (file ảnh)
+  });
+  return handleResponse(res);
+}

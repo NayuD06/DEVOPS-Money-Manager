@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 const cors    = require('cors');
 const mongoose = require('mongoose');
 
@@ -18,6 +19,9 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(metricsMiddleware);
+
+// Serve static files (cho upload ảnh)
+app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 // ── Routes ────────────────────────────────────────────────
 app.use('/api/auth', authRouter);

@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema(
       required: [true, 'Mật khẩu là bắt buộc'],
       minlength: [6, 'Mật khẩu tối thiểu 6 ký tự'],
     },
+    avatar: {
+      type: String,
+      default: '',
+    },
   },
   {
     timestamps: true,

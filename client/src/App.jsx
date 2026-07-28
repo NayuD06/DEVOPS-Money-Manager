@@ -4,6 +4,7 @@ import Header from './components/Header.jsx';
 import Sidebar from './components/Sidebar.jsx';
 import Dashboard from './components/Dashboard.jsx';
 import AuthModal from './components/AuthModal.jsx';
+import ProfileModal from './components/ProfileModal.jsx';
 import { fetchCurrentUser } from './api/auth.js';
 
 export default function App() {
@@ -31,6 +32,7 @@ export default function App() {
 
   const [user, setUser] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   useEffect(() => {
     fetchCurrentUser().then((u) => {
@@ -68,6 +70,7 @@ export default function App() {
         theme={theme}
         onToggleTheme={toggleTheme}
         onOpenAuth={() => setShowAuthModal(true)}
+        onOpenProfile={() => setShowProfileModal(true)}
         onLogout={handleLogout}
         onGoHome={() => setTab('home')}
       />
@@ -129,6 +132,15 @@ export default function App() {
           addToast('success', `Chào mừng ${u.username}!`, 'Đăng nhập Sổ FinFlow thành công');
         }}
       />
+      
+      {showProfileModal && user && (
+        <ProfileModal
+          user={user}
+          onClose={() => setShowProfileModal(false)}
+          onUpdate={(updatedUser) => setUser(updatedUser)}
+          onToast={addToast}
+        />
+      )}
     </div>
   );
 }

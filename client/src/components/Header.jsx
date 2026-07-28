@@ -1,6 +1,8 @@
 import React from 'react';
 
-export default function Header({ user, theme, onToggleTheme, onOpenAuth, onLogout, onGoHome }) {
+export default function Header({ user, theme, onToggleTheme, onOpenAuth, onLogout, onGoHome, onOpenProfile }) {
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  
   return (
     <header className="app-header">
       <div className="header-brand" onClick={onGoHome} title="Về trang giới thiệu FinFlow Pro">
@@ -25,8 +27,14 @@ export default function Header({ user, theme, onToggleTheme, onOpenAuth, onLogou
         )}
 
         {user ? (
-          <div className="user-profile-badge">
-            <div className="user-avatar">{user.username.charAt(0).toUpperCase()}</div>
+          <div className="user-profile-badge" onClick={onOpenProfile} style={{ cursor: 'pointer' }} title="Cập nhật hồ sơ cá nhân">
+            <div className="user-avatar" style={{ overflow: 'hidden', padding: 0 }}>
+              {user.avatar ? (
+                <img src={`${API_URL}${user.avatar}`} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                user.username.charAt(0).toUpperCase()
+              )}
+            </div>
             <div className="user-info">
               <span className="user-name">{user.username}</span>
               <span className="user-email">{user.email}</span>
