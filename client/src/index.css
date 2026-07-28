@@ -914,6 +914,31 @@ select.form-control option { background: var(--c-surface); color: var(--c-text);
 
 /* ── Responsive ───────────────────────────────────────── */
 @media (max-width: 768px) {
+  /* Fix Header Responsive */
+  .app-header {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+  .header-brand { gap: 10px; }
+  .header-logo { font-size: 1.6rem; }
+  .header-title { font-size: 1.15rem; line-height: 1.2; }
+  .header-subtitle { display: none; } /* Ẩn subtitle dài trên mobile */
+  
+  .header-actions { gap: 8px; }
+  .btn-theme-toggle span:last-child { display: none; } /* Ẩn chữ Giao diện tối/sáng, chỉ để lại icon */
+  .btn-theme-toggle { padding: 8px 10px; border-radius: 50%; }
+  
+  .btn-login-header {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  .user-profile-badge { padding: 4px 8px 4px 4px; gap: 8px; }
+  .user-info { display: none; }
+  .btn-logout { padding: 4px 6px; }
+
+  /* Layout and Table Fixes */
   .layout { grid-template-columns: 1fr; }
   .sidebar { display: none; }
   /* Padding bottom 85px to avoid content being hidden behind the bottom nav */
