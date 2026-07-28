@@ -950,6 +950,7 @@ select.form-control option { background: var(--c-surface); color: var(--c-text);
   table tbody td { display: block; padding: 4px 0; border: none; }
   table tbody td:last-child { text-align: left; margin-top: 12px; }
   .td-actions { justify-content: flex-start; }
+  .hide-mobile { display: none !important; }
 }
 
 @media (max-width: 500px) {

@@ -127,6 +127,43 @@ export default function Dashboard({ activeTab = 'home', onTab, month, category, 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  const handleExportCSV = async () => {
+    try {
+      onToast('info', 'Đang tạo báo cáo Excel (CSV)...', 'Vui lòng chờ trong giây lát');
+      const res = await fetchExpenses({ month, category, type, page: 1, limit: 10000 });
+      if (!res.data || res.data.length === 0) {
+        return onToast('error', 'Không có dữ liệu', 'Không có giao dịch nào để xuất ra file.');
+      }
+      
+      // Tạo tiêu đề (Header) cho file CSV (Thêm BOM \uFEFF để Excel hiển thị tiếng Việt có dấu chuẩn xác)
+      const csvRows = ['\uFEFFNgày,Loại,Danh mục,Mô tả & Ghi chú,Số tiền (VNĐ)'];
+      
+      res.data.forEach(exp => {
+        const date = new Date(exp.date).toLocaleDateString('vi-VN');
+        const expType = exp.type === 'income' ? 'Thu' : 'Chi';
+        const cat = `"${exp.category}"`;
+        const desc = `"${(exp.description || '').replace(/"/g, '""')}"`;
+        const amount = exp.amount;
+        csvRows.push(`${date},${expType},${cat},${desc},${amount}`);
+      });
+      
+      const csvString = csvRows.join('\n');
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `BaoCao_SoThuChi_${month || 'All'}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      
+      onToast('success', 'Xuất báo cáo thành công!', 'File Excel (CSV) đã được tải về máy của bạn.');
+    } catch (err) {
+      onToast('error', 'Xuất file thất bại', err.message);
+    }
+  };
+
   // Nếu chưa đăng nhập HOẶC đang chọn Tab Trang Chủ (home) -> Hiện WelcomePage
   if (!user || activeTab === 'home') {
     return (
@@ -154,7 +191,15 @@ export default function Dashboard({ activeTab = 'home', onTab, month, category, 
             Tháng {month?.slice(5)}/{month?.slice(0, 4)} • Tài khoản Sổ FinFlow của <strong style={{ color: 'var(--c-accent)' }}>{user.username}</strong>
           </p>
         </div>
-        <div>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <button
+            onClick={handleExportCSV}
+            className="btn btn-ghost"
+            style={{ padding: '11px 20px', fontSize: '0.95rem', borderRadius: '99px', display: 'flex', alignItems: 'center', gap: 8, border: '1px solid var(--c-border2)' }}
+            title="Tải bảng kê chi tiết ra file Excel (CSV)"
+          >
+            <span>📥</span> <span className="hide-mobile">Xuất Excel</span>
+          </button>
           <button
             id="btn-add-expense"
             className="btn btn-primary"
