@@ -80,8 +80,25 @@ export default function ExpenseForm({ initial, onSubmit, onClose, loading }) {
   const categories = getCategoriesByType(form.type);
   const isIncome = form.type === 'income';
 
+  const backdropMouseDownRef = React.useRef(false);
+
   return (
-    <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+    <div 
+      className="modal-overlay" 
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) {
+          backdropMouseDownRef.current = true;
+        } else {
+          backdropMouseDownRef.current = false;
+        }
+      }}
+      onMouseUp={(e) => {
+        if (e.target === e.currentTarget && backdropMouseDownRef.current) {
+          onClose();
+        }
+        backdropMouseDownRef.current = false;
+      }}
+    >
       <div className="modal" role="dialog" aria-modal="true" style={{ borderTop: `4px solid ${isIncome ? '#10b981' : '#ef4444'}` }}>
         <div className="modal__header">
           <h2 className="modal__title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

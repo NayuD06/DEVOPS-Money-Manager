@@ -47,8 +47,25 @@ export default function ProfileModal({ user, onClose, onUpdate, onToast }) {
     }
   };
 
+  const backdropMouseDownRef = React.useRef(false);
+
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div 
+      className="modal-overlay" 
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) {
+          backdropMouseDownRef.current = true;
+        } else {
+          backdropMouseDownRef.current = false;
+        }
+      }}
+      onMouseUp={(e) => {
+        if (e.target === e.currentTarget && backdropMouseDownRef.current) {
+          onClose();
+        }
+        backdropMouseDownRef.current = false;
+      }}
+    >
       <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px' }}>
         <div className="modal__header">
           <h2 className="modal__title">Hồ Sơ Của Tôi</h2>
