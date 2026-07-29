@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { getCategoryMeta } from './Sidebar.jsx';
 import PieChart from './PieChart.jsx';
 
@@ -7,6 +7,18 @@ function fmt(amount) {
 }
 
 export default function StatsCards({ stats, loading, month }) {
+  const [showPie, setShowPie] = useState(() => {
+    try { return localStorage.getItem('spendwise_showPie') !== 'false'; }
+    catch { return true; }
+  });
+
+  function togglePie() {
+    setShowPie(prev => {
+      const next = !prev;
+      try { localStorage.setItem('spendwise_showPie', String(next)); } catch {}
+      return next;
+    });
+  }
   if (loading) {
     return (
       <div className="stats-row">
@@ -109,9 +121,26 @@ export default function StatsCards({ stats, loading, month }) {
               <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--c-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
                 📊 Phân bổ chi tiêu trong tháng theo danh mục
               </h3>
-              <span className="badge" style={{ background: 'var(--c-surface2)', color: 'var(--c-text-2)' }}>
-                Tổng chi: {fmt(totalExpense)}
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span className="badge" style={{ background: 'var(--c-surface2)', color: 'var(--c-text-2)' }}>
+                  Tổng chi: {fmt(totalExpense)}
+                </span>
+                <button
+                  onClick={togglePie}
+                  title={showPie ? 'Ẩn biểu đồ tròn' : 'Hiện biểu đồ tròn'}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    padding: '5px 12px', borderRadius: 99, cursor: 'pointer',
+                    fontSize: '0.78rem', fontWeight: 600, border: '1px solid var(--c-border2)',
+                    background: showPie ? 'var(--c-accent)' : 'var(--c-surface2)',
+                    color: showPie ? '#fff' : 'var(--c-text-2)',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <span style={{ fontSize: '0.9rem' }}>{showPie ? '🥧' : '📊'}</span>
+                  {showPie ? 'Ẩn biểu đồ' : 'Hiện biểu đồ'}
+                </button>
+              </div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: byCategory.length > 1 ? '1fr auto' : '1fr', gap: 32, alignItems: 'center' }}>
               {/* Bar chart */}
@@ -139,9 +168,9 @@ export default function StatsCards({ stats, loading, month }) {
                   );
                 })}
               </div>
-              {/* Pie Chart — show when there is at least 1 category */}
-              {byCategory.length >= 1 && (
-                <div style={{ width: 190, flexShrink: 0 }}>
+              {/* Pie Chart — toggleable */}
+              {showPie && byCategory.length >= 1 && (
+                <div style={{ width: 190, flexShrink: 0, animation: 'fadeIn 0.3s ease' }}>
                   <PieChart data={pieData} size={190} />
                 </div>
               )}
