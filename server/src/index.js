@@ -22,6 +22,7 @@ app.use(metricsMiddleware);
 
 // Serve static files (cho upload ảnh)
 app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
+app.use('/api/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 // ── Routes ────────────────────────────────────────────────
 app.use('/api/auth', authRouter);
