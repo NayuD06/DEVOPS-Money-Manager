@@ -1,7 +1,7 @@
 import React from 'react';
 
 export default function Header({ user, theme, onToggleTheme, onOpenAuth, onLogout, onGoHome, onOpenProfile }) {
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5000');
   
   return (
     <header className="app-header">
