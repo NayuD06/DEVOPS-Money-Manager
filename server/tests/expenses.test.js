@@ -13,7 +13,7 @@ const { validateAmount, validateCategory, validateType, validateDescription, val
 // ─────────────────────────────────────────────────────────────
 describe('validateAmount', () => {
   test('returns true for positive numbers', () => {
-    expect(validateAmount(100)).toBe(false);
+    expect(validateAmount(100)).toBe(true);
     expect(validateAmount(0.01)).toBe(true);
     expect(validateAmount('500')).toBe(true);
     expect(validateAmount(999_999_999)).toBe(true);

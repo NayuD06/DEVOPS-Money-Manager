@@ -71,8 +71,8 @@ async function start() {
     await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/spendwise');
     console.log('✅ MongoDB connected');
 
-    const server = app.listen(PORT, '127.0.0.1', () => {
-      console.log(`🚀 Server running on port ${PORT}`);
+    const server = app.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 Server running on port ${PORT} (0.0.0.0)`);
     });
 
     // Graceful shutdown

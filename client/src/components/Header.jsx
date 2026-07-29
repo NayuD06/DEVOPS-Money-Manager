@@ -8,7 +8,7 @@ export default function Header({ user, theme, onToggleTheme, onOpenAuth, onLogou
       <div className="header-brand" onClick={onGoHome} title="Về trang giới thiệu FinFlow Pro">
         <span className="header-logo" role="img" aria-label="finflow-logo">📘✨</span>
         <div>
-          <h1 className="header-title">Sổ Thu Chi FinFlow <span className="header-badge">V2</span></h1>
+          <h1 className="header-title">Sổ Thu Chi FinFlow <span className="header-badge">Pro</span></h1>
           <p className="header-subtitle">Ứng dụng ghi chép & kiểm soát dòng tiền cá nhân</p>
         </div>
       </div>
