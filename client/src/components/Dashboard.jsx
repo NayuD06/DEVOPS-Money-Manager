@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import * as XLSX from 'xlsx';
 import StatsCards from './StatsCards.jsx';
 import ExpenseTable from './ExpenseTable.jsx';
 import ExpenseForm from './ExpenseForm.jsx';
 import DeleteConfirm from './DeleteConfirm.jsx';
 import BudgetsView from './BudgetsView.jsx';
 import WelcomePage from './WelcomePage.jsx';
+import SmartInsights from './SmartInsights.jsx';
 import { fetchExpenses, fetchStats, createExpense, updateExpense, deleteExpense } from '../api/expenses.js';
 
 export default function Dashboard({ activeTab = 'home', onTab, month, category, type, user, onOpenAuth, onToast }) {
@@ -18,6 +20,18 @@ export default function Dashboard({ activeTab = 'home', onTab, month, category, 
   const [loadingList,  setLoadingList]  = useState(false);
   const [loadingStats, setLoadingStats] = useState(false);
   const [loadingMut,   setLoadingMut]   = useState(false);
+
+  // ── Previous month stats ────────────────────────────────
+  const [prevStats, setPrevStats] = useState(null);
+
+  // Helper: get previous month string "YYYY-MM"
+  function getPrevMonth(m) {
+    if (!m) return null;
+    const [y, mo] = m.split('-').map(Number);
+    const pm = mo === 1 ? 12 : mo - 1;
+    const py = mo === 1 ? y - 1 : y;
+    return `${py}-${String(pm).padStart(2, '0')}`;
+  }
 
   // ── Modal state ────────────────────────────────────────
   const [showForm,     setShowForm]     = useState(false);
@@ -72,6 +86,15 @@ export default function Dashboard({ activeTab = 'home', onTab, month, category, 
   useEffect(() => {
     if (user && activeTab !== 'home') {
       loadStats();
+      // Also fetch previous month stats for Smart Insights
+      const prevMonth = getPrevMonth(month);
+      if (prevMonth) {
+        fetchStats({ month: prevMonth })
+          .then(data => setPrevStats(data))
+          .catch(() => setPrevStats(null));
+      } else {
+        setPrevStats(null);
+      }
     }
   }, [loadStats, user, activeTab]);
 
@@ -128,38 +151,78 @@ export default function Dashboard({ activeTab = 'home', onTab, month, category, 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  const handleExportCSV = async () => {
+  const handleExportXLSX = async () => {
     try {
-      onToast('info', 'Đang tạo báo cáo Excel (CSV)...', 'Vui lòng chờ trong giây lát');
+      onToast('info', 'Đang tạo báo cáo Excel...', 'Vui lòng chờ trong giây lát');
       const res = await fetchExpenses({ month, category, type, page: 1, limit: 10000 });
       if (!res.expenses || res.expenses.length === 0) {
         return onToast('error', 'Không có dữ liệu', 'Không có giao dịch nào để xuất ra file.');
       }
-      
-      // Tạo tiêu đề (Header) cho file CSV (Thêm BOM \uFEFF để Excel hiển thị tiếng Việt có dấu chuẩn xác)
-      const csvRows = ['\uFEFFNgày,Loại,Danh mục,Mô tả & Ghi chú,Số tiền (VNĐ)'];
-      
-      res.expenses.forEach(exp => {
-        const date = new Date(exp.date).toLocaleDateString('vi-VN');
-        const expType = exp.type === 'income' ? 'Thu' : 'Chi';
-        const cat = `"${exp.category}"`;
-        const desc = `"${(exp.description || '').replace(/"/g, '""')}"`;
-        const amount = exp.amount;
-        csvRows.push(`${date},${expType},${cat},${desc},${amount}`);
+
+      const fmt = (v) => new Intl.NumberFormat('vi-VN').format(v);
+      const exps = res.expenses;
+      const totalInc = exps.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0);
+      const totalExp = exps.filter(e => e.type !== 'income').reduce((s, e) => s + e.amount, 0);
+      const balance  = totalInc - totalExp;
+      const savRate  = totalInc > 0 ? ((balance / totalInc) * 100).toFixed(1) : '0';
+      const wb = XLSX.utils.book_new();
+
+      /* ── Sheet 1: Tổng Quan ── */
+      const s1Data = [
+        ['BÁO CÁO THU CHI - ' + (month ? `THÁNG ${month.slice(5)}/${month.slice(0,4)}` : 'TẤT CẢ')],
+        [],
+        ['Chỉ số', 'Giá trị (VNĐ)'],
+        ['Tổng Thu Nhập',  totalInc],
+        ['Tổng Chi Tiêu',  totalExp],
+        ['Số Dư (Thu - Chi)', balance],
+        ['Tỷ lệ tiết kiệm', `${savRate}%`],
+        ['Tổng số giao dịch', exps.length],
+      ];
+      const ws1 = XLSX.utils.aoa_to_sheet(s1Data);
+      ws1['!cols'] = [{ wch: 28 }, { wch: 20 }];
+      // Style header
+      ws1['A1'] = { v: s1Data[0][0], t: 's', s: { font: { bold: true, sz: 14 }, alignment: { horizontal: 'center' } } };
+      XLSX.utils.book_append_sheet(wb, ws1, 'Tổng Quan');
+
+      /* ── Sheet 2: Chi Tiết Giao Dịch ── */
+      const s2Rows = [['STT', 'Ngày', 'Loại', 'Danh Mục', 'Mô Tả', 'Số Tiền (VNĐ)']];
+      exps.forEach((exp, idx) => {
+        s2Rows.push([
+          idx + 1,
+          new Date(exp.date).toLocaleDateString('vi-VN'),
+          exp.type === 'income' ? 'Thu' : 'Chi',
+          exp.category || '',
+          exp.description || '',
+          exp.amount,
+        ]);
       });
-      
-      const csvString = csvRows.join('\n');
-      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `BaoCao_SoThuChi_${month || 'All'}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      
-      onToast('success', 'Xuất báo cáo thành công!', 'File Excel (CSV) đã được tải về máy của bạn.');
+      // Summary row
+      s2Rows.push([]);
+      s2Rows.push(['', '', '', '', 'TỔNG CỘNG', totalInc + totalExp]);
+      const ws2 = XLSX.utils.aoa_to_sheet(s2Rows);
+      ws2['!cols'] = [{ wch: 6 }, { wch: 14 }, { wch: 8 }, { wch: 18 }, { wch: 30 }, { wch: 18 }];
+      XLSX.utils.book_append_sheet(wb, ws2, 'Chi Tiết Giao Dịch');
+
+      /* ── Sheet 3: Theo Danh Mục ── */
+      const catMap = {};
+      exps.filter(e => e.type !== 'income').forEach(e => {
+        catMap[e.category] = (catMap[e.category] || 0) + e.amount;
+      });
+      const s3Rows = [['Danh Mục', 'Tổng Chi (VNĐ)', '% Tổng Chi']];
+      Object.entries(catMap)
+        .sort((a, b) => b[1] - a[1])
+        .forEach(([cat, total]) => {
+          s3Rows.push([cat, total, totalExp > 0 ? `${((total / totalExp) * 100).toFixed(1)}%` : '0%']);
+        });
+      s3Rows.push([]);
+      s3Rows.push(['TỔNG CỘNG', totalExp, '100%']);
+      const ws3 = XLSX.utils.aoa_to_sheet(s3Rows);
+      ws3['!cols'] = [{ wch: 20 }, { wch: 20 }, { wch: 14 }];
+      XLSX.utils.book_append_sheet(wb, ws3, 'Theo Danh Mục');
+
+      // Download
+      XLSX.writeFile(wb, `BaoCao_SpendWise_${month || 'All'}.xlsx`);
+      onToast('success', 'Xuất báo cáo thành công!', '3 Sheet: Tổng Quan, Chi Tiết, Theo Danh Mục.');
     } catch (err) {
       onToast('error', 'Xuất file thất bại', err.message);
     }
@@ -194,10 +257,10 @@ export default function Dashboard({ activeTab = 'home', onTab, month, category, 
         </div>
         <div style={{ display: 'flex', gap: 12 }}>
           <button
-            onClick={handleExportCSV}
+            onClick={handleExportXLSX}
             className="btn btn-ghost"
             style={{ padding: '11px 20px', fontSize: '0.95rem', borderRadius: '99px', display: 'flex', alignItems: 'center', gap: 8, border: '1px solid var(--c-border2)' }}
-            title="Tải bảng kê chi tiết ra file Excel (CSV)"
+            title="Tải bảng kê chi tiết ra file Excel (.xlsx) với 3 Sheet"
           >
             <span>📥</span> <span className="hide-mobile">Xuất Excel</span>
           </button>
@@ -216,7 +279,9 @@ export default function Dashboard({ activeTab = 'home', onTab, month, category, 
       {activeTab === 'overview' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           <StatsCards stats={stats} loading={loadingStats} month={month} />
-          
+
+          <SmartInsights stats={stats} prevStats={prevStats} month={month} />
+
           <div style={{ marginTop: 8 }}>
             <div className="section-header" style={{ marginBottom: 14 }}>
               <div className="section-title">⏱️ Giao dịch gần đây nhất</div>

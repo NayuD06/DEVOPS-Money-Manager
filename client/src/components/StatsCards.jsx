@@ -1,5 +1,6 @@
 import React from 'react';
 import { getCategoryMeta } from './Sidebar.jsx';
+import PieChart from './PieChart.jsx';
 
 function fmt(amount) {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount || 0);
@@ -96,43 +97,58 @@ export default function StatsCards({ stats, loading, month }) {
         </div>
       </div>
 
-      {/* Category breakdown bars */}
-      {byCategory.length > 0 && (
-        <div className="table-wrap" style={{ padding: '24px', marginTop: 24 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--c-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
-              📊 Phân bổ chi tiêu trong tháng theo danh mục
-            </h3>
-            <span className="badge" style={{ background: 'var(--c-surface2)', color: 'var(--c-text-2)' }}>
-              Tổng chi: {fmt(totalExpense)}
-            </span>
-          </div>
-          <div className="cat-bars">
-            {byCategory.map((cat) => {
-              const meta = getCategoryMeta(cat._id);
-              const pct = totalExpense > 0 ? (cat.total / totalExpense) * 100 : 0;
-              return (
-                <div key={cat._id} className="cat-bar-row">
-                  <div className="cat-bar-meta">
-                    <span className="cat-bar-label">
-                      <span style={{ fontSize: '1.1rem' }}>{meta.icon}</span> {cat._id}
-                    </span>
-                    <span className="cat-bar-val">
-                      {fmt(cat.total)} <span style={{ color: 'var(--c-text-3)', fontWeight: 500 }}>({pct.toFixed(1)}%)</span>
-                    </span>
-                  </div>
-                  <div className="cat-bar-track">
-                    <div
-                      className="cat-bar-fill"
-                      style={{ width: `${Math.min(pct, 100)}%`, background: meta.color }}
-                    />
-                  </div>
+      {/* Category breakdown bars + Pie Chart */}
+      {byCategory.length > 0 && (() => {
+        const pieData = byCategory.map((cat) => {
+          const meta = getCategoryMeta(cat._id);
+          return { label: `${meta.icon} ${cat._id}`, value: cat.total, color: meta.color };
+        });
+        return (
+          <div className="table-wrap" style={{ padding: '24px', marginTop: 24 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--c-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                📊 Phân bổ chi tiêu trong tháng theo danh mục
+              </h3>
+              <span className="badge" style={{ background: 'var(--c-surface2)', color: 'var(--c-text-2)' }}>
+                Tổng chi: {fmt(totalExpense)}
+              </span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: byCategory.length > 1 ? '1fr auto' : '1fr', gap: 32, alignItems: 'center' }}>
+              {/* Bar chart */}
+              <div className="cat-bars">
+                {byCategory.map((cat) => {
+                  const meta = getCategoryMeta(cat._id);
+                  const pct = totalExpense > 0 ? (cat.total / totalExpense) * 100 : 0;
+                  return (
+                    <div key={cat._id} className="cat-bar-row">
+                      <div className="cat-bar-meta">
+                        <span className="cat-bar-label">
+                          <span style={{ fontSize: '1.1rem' }}>{meta.icon}</span> {cat._id}
+                        </span>
+                        <span className="cat-bar-val">
+                          {fmt(cat.total)} <span style={{ color: 'var(--c-text-3)', fontWeight: 500 }}>({pct.toFixed(1)}%)</span>
+                        </span>
+                      </div>
+                      <div className="cat-bar-track">
+                        <div
+                          className="cat-bar-fill"
+                          style={{ width: `${Math.min(pct, 100)}%`, background: meta.color }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {/* Pie Chart — only show when there are 2+ categories */}
+              {byCategory.length > 1 && (
+                <div style={{ width: 190, flexShrink: 0 }}>
+                  <PieChart data={pieData} size={190} />
                 </div>
-              );
-            })}
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </>
   );
 }
