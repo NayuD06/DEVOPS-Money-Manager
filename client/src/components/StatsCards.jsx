@@ -139,8 +139,8 @@ export default function StatsCards({ stats, loading, month }) {
                   );
                 })}
               </div>
-              {/* Pie Chart — only show when there are 2+ categories */}
-              {byCategory.length > 1 && (
+              {/* Pie Chart — show when there is at least 1 category */}
+              {byCategory.length >= 1 && (
                 <div style={{ width: 190, flexShrink: 0 }}>
                   <PieChart data={pieData} size={190} />
                 </div>
