@@ -98,6 +98,7 @@ export default function Dashboard({ activeTab = 'home', onTab, month, category, 
       await updateExpense(editTarget._id, data);
       onToast('success', 'Đã cập nhật giao dịch!');
       setEditTarget(null);
+      setShowForm(false);
       await Promise.all([loadExpenses(page), loadStats()]);
     } catch (err) {
       onToast('error', 'Cập nhật thất bại', err.message);
