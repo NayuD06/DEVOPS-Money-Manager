@@ -39,7 +39,14 @@ export default function Header({ user, theme, onToggleTheme, onOpenAuth, onLogou
               <span className="user-name">{user.username}</span>
               <span className="user-email">{user.email}</span>
             </div>
-            <button className="btn-logout" onClick={onLogout} title="Đăng xuất khỏi Sổ Thu Chi FinFlow">
+            <button 
+              className="btn-logout" 
+              onClick={(e) => {
+                e.stopPropagation();
+                onLogout();
+              }} 
+              title="Đăng xuất khỏi Sổ Thu Chi FinFlow"
+            >
               Đăng xuất ↗
             </button>
           </div>

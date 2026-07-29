@@ -58,6 +58,8 @@ export default function App() {
     localStorage.removeItem('spendwise_token');
     setUser(null);
     setTab('home');
+    setShowProfileModal(false);
+    setShowAuthModal(false);
     addToast('info', 'Đã đăng xuất khỏi Sổ Thu Chi FinFlow');
   };
 
