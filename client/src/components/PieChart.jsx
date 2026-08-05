@@ -21,9 +21,12 @@ export default function PieChart({ data = [], size = 200 }) {
   let cumAngle = -Math.PI / 2; // start from top
   const slices = data.map((d, i) => {
     const angle = (d.value / total) * 2 * Math.PI;
+    // SVG A command fails if start and end points are identical (100% circle)
+    // Reduce slightly to ensure it renders a full circle.
+    const safeAngle = angle >= 2 * Math.PI ? 1.9999 * Math.PI : angle;
     const startAngle = cumAngle;
-    const endAngle = cumAngle + angle;
-    cumAngle = endAngle;
+    const endAngle = cumAngle + safeAngle;
+    cumAngle = cumAngle + angle; // next slice starts exactly where it should
 
     const x1 = cx + radius * Math.cos(startAngle);
     const y1 = cy + radius * Math.sin(startAngle);
