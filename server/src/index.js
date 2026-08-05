@@ -20,6 +20,14 @@ app.use(cors({
 app.use(express.json());
 app.use(metricsMiddleware);
 
+// Middleware đảm bảo kết nối DB trên Vercel (Serverless Cold Start)
+if (process.env.VERCEL) {
+  app.use(async (req, res, next) => {
+    await connectDB();
+    next();
+  });
+}
+
 // Serve static files (cho upload ảnh)
 app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 app.use('/api/uploads', express.static(path.join(__dirname, '../public/uploads')));
@@ -78,10 +86,7 @@ async function connectDB() {
   }
 }
 
-// Nếu chạy trên Vercel, Vercel sẽ tự gọi app (Serverless), ta chỉ cần connectDB
-if (process.env.VERCEL) {
-  connectDB();
-} else if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'test') {
   // Chạy local hoặc trên VPS
   connectDB().then(() => {
     const server = app.listen(PORT, '0.0.0.0', () => {
