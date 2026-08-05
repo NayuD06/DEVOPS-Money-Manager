@@ -2,7 +2,8 @@
  * Auth API client — thin wrapper around fetch with error handling.
  */
 
-const BASE = '/api/auth';
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:5000');
+const BASE = `${API_URL}/api/auth`;
 
 async function handleResponse(res) {
   const data = await res.json().catch(() => ({}));
