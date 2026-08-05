@@ -347,6 +347,19 @@ body, .app, .app-header, .sidebar, .stat-card, .table-wrap, .budget-card, .featu
   flex-shrink: 0;
 }
 
+/* ── Mobile Page Header (replaces dash-header on mobile) ── */
+.mob-page-header {
+  display: none; /* hidden on desktop */
+}
+
+/* ── Floating Action Button (mobile only) ───────────────── */
+.fab {
+  display: none; /* hidden on desktop */
+}
+
+/* ── Utility ─────────────────────────────────────────────── */
+.hide-on-mobile { /* visible by default on desktop */ }
+
 
 /* ── Stats Cards row ──────────────────────────────────── */
 .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
@@ -1002,6 +1015,76 @@ select.form-control option { background: var(--c-surface); color: var(--c-text);
   .dash-header__title { font-size: 1rem; white-space: normal; }
   .dash-header__sub { white-space: normal; font-size: 0.78rem; }
   .dash-header__actions { width: 100%; justify-content: flex-end; }
+
+  /* ---- Hide desktop-only elements on mobile ---- */
+  .hide-on-mobile { display: none !important; }
+
+  /* ---- Mobile Page Header ---- */
+  .mob-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 4px 14px;
+    margin-bottom: 4px;
+  }
+  .mob-page-header__left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .mob-page-header__icon {
+    font-size: 1.8rem;
+    line-height: 1;
+  }
+  .mob-page-header__title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--c-text);
+    line-height: 1.2;
+  }
+  .mob-page-header__sub {
+    font-size: 0.78rem;
+    color: var(--c-text-3);
+    font-weight: 500;
+    margin-top: 2px;
+  }
+  .mob-page-header__export {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: 50%;
+    width: 38px; height: 38px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    flex-shrink: 0;
+  }
+
+  /* ---- FAB (Floating Action Button) ---- */
+  .fab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+    right: 20px;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--c-accent), var(--c-accent-h, #004c99));
+    color: #fff;
+    font-size: 1.8rem;
+    font-weight: 300;
+    line-height: 1;
+    border: none;
+    box-shadow: 0 6px 20px rgba(0,102,204,0.45);
+    cursor: pointer;
+    z-index: 99;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .fab:active {
+    transform: scale(0.92);
+    box-shadow: 0 3px 10px rgba(0,102,204,0.3);
+  }
 
   /* ---- Bottom Mobile Nav ---- */
   .mobile-nav {

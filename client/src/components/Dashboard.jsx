@@ -243,8 +243,34 @@ export default function Dashboard({ activeTab = 'home', onTab, month, category, 
 
   return (
     <>
-      {/* Top action bar */}
-      <div className="dash-header">
+      {/* ── Mobile Page Header (only visible on mobile, per tab) ── */}
+      <div className="mob-page-header">
+        <div className="mob-page-header__left">
+          <span className="mob-page-header__icon">
+            {activeTab === 'overview' && '📊'}
+            {activeTab === 'ledger'   && '📝'}
+            {activeTab === 'budget'   && '🎯'}
+          </span>
+          <div>
+            <div className="mob-page-header__title">
+              {activeTab === 'overview' && 'Tổng quan'}
+              {activeTab === 'ledger'   && 'Ghi chép'}
+              {activeTab === 'budget'   && 'Hạn mức'}
+            </div>
+            <div className="mob-page-header__sub">Tháng {month?.slice(5)}/{month?.slice(0, 4)}</div>
+          </div>
+        </div>
+        <button
+          onClick={handleExportXLSX}
+          className="mob-page-header__export"
+          title="Xuất Excel"
+        >
+          📥
+        </button>
+      </div>
+
+      {/* ── Desktop action bar (hidden on mobile) ── */}
+      <div className="dash-header hide-on-mobile">
         <div className="dash-header__text">
           <h2 className="dash-header__title">
             {activeTab === 'overview' && '📊 Báo Cáo & Tổng Quan'}
@@ -263,7 +289,7 @@ export default function Dashboard({ activeTab = 'home', onTab, month, category, 
             style={{ borderRadius: '99px', border: '1px solid var(--c-border2)' }}
             title="Xuất Excel"
           >
-            <span>📥</span> <span className="hide-mobile">Xuất Excel</span>
+            <span>📥</span> <span>Xuất Excel</span>
           </button>
           <button
             id="btn-add-expense"
@@ -275,6 +301,15 @@ export default function Dashboard({ activeTab = 'home', onTab, month, category, 
           </button>
         </div>
       </div>
+
+      {/* ── Floating Action Button (mobile only) ── */}
+      <button
+        className="fab"
+        onClick={() => { setEditTarget(null); setShowForm(true); }}
+        title="Ghi nhận thu/chi"
+      >
+        +
+      </button>
 
       {/* Tab 1: Overview & Reports */}
       {activeTab === 'overview' && (
