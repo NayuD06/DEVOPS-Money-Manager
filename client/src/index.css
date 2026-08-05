@@ -664,7 +664,7 @@ select.form-control option { background: var(--c-surface); color: var(--c-text);
 /* ── Category bar chart ───────────────────────────────── */
 .cat-bars { display: flex; flex-direction: column; gap: 16px; }
 .cat-bar-row { display: flex; flex-direction: column; gap: 6px; }
-.cat-bar-meta { display: flex; justify-content: space-between; font-size: 0.88rem; }
+.cat-bar-meta { display: flex; justify-content: space-between; font-size: 0.88rem; flex-wrap: wrap; gap: 4px; }
 .cat-bar-label { color: var(--c-text); font-weight: 700; display: flex; align-items: center; gap: 8px; }
 .cat-bar-val   { color: var(--c-text-2); font-weight: 700; }
 .cat-bar-track {
@@ -677,6 +677,30 @@ select.form-control option { background: var(--c-surface); color: var(--c-text);
   height: 100%; border-radius: 99px;
   transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* ── Category section header ──────────────────────────── */
+.cat-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+/* ── Category layout: bars + pie ─────────────────────── */
+.cat-layout {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 28px;
+  align-items: center;
+}
+.cat-pie-wrap {
+  width: 190px;
+  flex-shrink: 0;
+  animation: fadeIn 0.3s ease;
+}
+
 
 /* ── Budgets & Progress Bars ──────────────────────────── */
 .budget-card {
@@ -1167,6 +1191,11 @@ select.form-control option { background: var(--c-surface); color: var(--c-text);
   .budget-card { padding: 18px; }
   .toast { min-width: unset; width: calc(100vw - 32px); max-width: unset; }
   .toast-container { right: 16px; left: 16px; bottom: 16px; }
+
+  /* ---- Category breakdown ---- */
+  .cat-layout { grid-template-columns: 1fr; gap: 20px; }
+  .cat-pie-wrap { width: 100%; max-width: 220px; margin: 0 auto; }
+
   .hero-title { font-size: 2rem; }
   .hero-subtitle { font-size: 0.98rem; }
   .hero-section { padding: 36px 16px 28px; }

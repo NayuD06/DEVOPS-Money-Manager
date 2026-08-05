@@ -116,33 +116,33 @@ export default function StatsCards({ stats, loading, month }) {
           return { label: `${meta.icon} ${cat._id}`, value: cat.total, color: meta.color };
         });
         return (
-          <div className="table-wrap" style={{ padding: '24px', marginTop: 24 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+          <div className="table-wrap" style={{ padding: '20px', marginTop: 24 }}>
+            <div className="cat-section-header">
               <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--c-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
-                📊 Phân bổ chi tiêu trong tháng theo danh mục
+                📊 Phân bổ chi tiêu theo danh mục
               </h3>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span className="badge" style={{ background: 'var(--c-surface2)', color: 'var(--c-text-2)' }}>
-                  Tổng chi: {fmt(totalExpense)}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                <span className="badge" style={{ background: 'var(--c-surface2)', color: 'var(--c-text-2)', whiteSpace: 'nowrap' }}>
+                  {fmt(totalExpense)}
                 </span>
                 <button
                   onClick={togglePie}
                   title={showPie ? 'Ẩn biểu đồ tròn' : 'Hiện biểu đồ tròn'}
                   style={{
-                    display: 'flex', alignItems: 'center', gap: 6,
-                    padding: '5px 12px', borderRadius: 99, cursor: 'pointer',
-                    fontSize: '0.78rem', fontWeight: 600, border: '1px solid var(--c-border2)',
+                    display: 'flex', alignItems: 'center', gap: 4,
+                    padding: '5px 10px', borderRadius: 99, cursor: 'pointer',
+                    fontSize: '0.75rem', fontWeight: 600, border: '1px solid var(--c-border2)',
                     background: showPie ? 'var(--c-accent)' : 'var(--c-surface2)',
                     color: showPie ? '#fff' : 'var(--c-text-2)',
-                    transition: 'all 0.2s ease',
+                    transition: 'all 0.2s ease', whiteSpace: 'nowrap',
                   }}
                 >
                   <span style={{ fontSize: '0.9rem' }}>{showPie ? '🥧' : '📊'}</span>
-                  {showPie ? 'Ẩn biểu đồ' : 'Hiện biểu đồ'}
+                  {showPie ? 'Ẩn' : 'Biểu đồ'}
                 </button>
               </div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: byCategory.length > 1 ? '1fr auto' : '1fr', gap: 32, alignItems: 'center' }}>
+            <div className="cat-layout">
               {/* Bar chart */}
               <div className="cat-bars">
                 {byCategory.map((cat) => {
@@ -170,7 +170,7 @@ export default function StatsCards({ stats, loading, month }) {
               </div>
               {/* Pie Chart — toggleable */}
               {showPie && byCategory.length >= 1 && (
-                <div style={{ width: 190, flexShrink: 0, animation: 'fadeIn 0.3s ease' }}>
+                <div className="cat-pie-wrap">
                   <PieChart data={pieData} size={190} />
                 </div>
               )}
