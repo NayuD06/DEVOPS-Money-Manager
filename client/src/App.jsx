@@ -76,7 +76,7 @@ export default function App() {
         onLogout={handleLogout}
         onGoHome={() => setTab('home')}
       />
-      <div className="layout" style={{ gridTemplateColumns: showSidebar ? '260px 1fr' : '1fr' }}>
+      <div className={`layout${showSidebar ? '' : ' layout--welcome'}`}>
         {showSidebar && (
           <Sidebar
             activeTab={activeTab}
@@ -89,7 +89,7 @@ export default function App() {
             onType={setType}
           />
         )}
-        <main className="main" style={{ padding: showSidebar ? '28px 32px' : '0' }}>
+        <main className={`main${showSidebar ? '' : ' main--welcome'}`}>
           <Dashboard
             activeTab={activeTab}
             onTab={setTab}

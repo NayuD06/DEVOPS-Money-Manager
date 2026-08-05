@@ -265,12 +265,15 @@ body, .app, .app-header, .sidebar, .stat-card, .table-wrap, .budget-card, .featu
   box-shadow: 0 8px 24px rgba(0, 102, 204, 0.45);
 }
 
-/* ── Layout ───────────────────────────────────────────── */
+/* ── Layout ────────────────────────────────────── */
 .layout {
   display: grid;
   grid-template-columns: 260px 1fr;
   gap: 0;
   flex: 1;
+}
+.layout--welcome {
+  grid-template-columns: 1fr;
 }
 
 /* ── Sidebar & Navigation Tabs ────────────────────────── */
@@ -307,8 +310,9 @@ body, .app, .app-header, .sidebar, .stat-card, .table-wrap, .budget-card, .featu
 }
 .sidebar__item .icon { font-size: 1.2rem; width: 24px; flex-shrink: 0; text-align: center; }
 
-/* ── Main content ─────────────────────────────────────── */
+/* ── Main content ───────────────────────────────── */
 .main { padding: 28px 32px; display: flex; flex-direction: column; gap: 24px; overflow-x: hidden; }
+.main--welcome { padding: 0; background: transparent; }
 
 /* ── Dashboard Header Bar ─────────────────────────────── */
 .dash-header {
@@ -996,9 +1000,10 @@ select.form-control option { background: var(--c-surface); color: var(--c-text);
   .btn-logout { padding: 4px 6px; font-size: 0.8rem; }
 
   /* ---- Layout ---- */
-  .layout { grid-template-columns: 1fr; }
+  .layout { grid-template-columns: 1fr !important; }
   .sidebar { display: none; }
   .main { padding: 14px 14px 90px; gap: 16px; }
+  .main--welcome { padding: 0; }
 
   /* ---- Stats Cards ---- */
   .stats-row { grid-template-columns: repeat(2, 1fr); gap: 12px; }
