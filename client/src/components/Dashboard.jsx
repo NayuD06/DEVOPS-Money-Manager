@@ -243,34 +243,35 @@ export default function Dashboard({ activeTab = 'home', onTab, month, category, 
 
   return (
     <>
-      {/* Top action bar: Always visible across management tabs for fast input */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, background: 'var(--c-surface)', padding: '16px 22px', borderRadius: 'var(--radius)', border: '1px solid var(--c-border)', boxShadow: 'var(--shadow-sm)' }}>
-        <div>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--c-text)' }}>
-            {activeTab === 'overview' && '📊 Báo Cáo & Tổng Quan Tài Chính'}
-            {activeTab === 'ledger'   && '📝 Sổ Ghi Chép Giao Dịch Thu/Chi'}
-            {activeTab === 'budget'   && '🎯 Hạn Mức Chi Tiêu & Gợi Ý AI'}
+      {/* Top action bar */}
+      <div className="dash-header">
+        <div className="dash-header__text">
+          <h2 className="dash-header__title">
+            {activeTab === 'overview' && '📊 Báo Cáo & Tổng Quan'}
+            {activeTab === 'ledger'   && '📝 Sổ Ghi Chép Giao Dịch'}
+            {activeTab === 'budget'   && '🎯 Hạn Mức Chi Tiêu'}
           </h2>
-          <p style={{ fontSize: '0.84rem', color: 'var(--c-text-2)', marginTop: 2 }}>
-            Tháng {month?.slice(5)}/{month?.slice(0, 4)} • Tài khoản Sổ FinFlow của <strong style={{ color: 'var(--c-accent)' }}>{user.username}</strong>
+          <p className="dash-header__sub">
+            Tháng {month?.slice(5)}/{month?.slice(0, 4)} •{' '}
+            Tài khoản của <strong style={{ color: 'var(--c-accent)' }}>{user.username}</strong>
           </p>
         </div>
-        <div style={{ display: 'flex', gap: 12 }}>
+        <div className="dash-header__actions">
           <button
             onClick={handleExportXLSX}
             className="btn btn-ghost"
-            style={{ padding: '11px 20px', fontSize: '0.95rem', borderRadius: '99px', display: 'flex', alignItems: 'center', gap: 8, border: '1px solid var(--c-border2)' }}
-            title="Tải bảng kê chi tiết ra file Excel (.xlsx) với 3 Sheet"
+            style={{ borderRadius: '99px', border: '1px solid var(--c-border2)' }}
+            title="Xuất Excel"
           >
             <span>📥</span> <span className="hide-mobile">Xuất Excel</span>
           </button>
           <button
             id="btn-add-expense"
             className="btn btn-primary"
-            style={{ padding: '11px 22px', fontSize: '0.95rem', borderRadius: '99px', display: 'flex', alignItems: 'center', gap: 8 }}
+            style={{ borderRadius: '99px' }}
             onClick={() => { setEditTarget(null); setShowForm(true); }}
           >
-            <span>➕</span> <span>Ghi nhận Thu/Chi</span>
+            <span>➕</span> <span>Ghi nhận</span>
           </button>
         </div>
       </div>

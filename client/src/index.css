@@ -310,6 +310,44 @@ body, .app, .app-header, .sidebar, .stat-card, .table-wrap, .budget-card, .featu
 /* ── Main content ─────────────────────────────────────── */
 .main { padding: 28px 32px; display: flex; flex-direction: column; gap: 24px; overflow-x: hidden; }
 
+/* ── Dashboard Header Bar ─────────────────────────────── */
+.dash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+  background: var(--c-surface);
+  padding: 16px 22px;
+  border-radius: var(--radius);
+  border: 1px solid var(--c-border);
+  box-shadow: var(--shadow-sm);
+}
+.dash-header__text { flex: 1; min-width: 0; }
+.dash-header__title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--c-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dash-header__sub {
+  font-size: 0.84rem;
+  color: var(--c-text-2);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dash-header__actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+
 /* ── Stats Cards row ──────────────────────────────────── */
 .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
 
@@ -957,6 +995,13 @@ select.form-control option { background: var(--c-surface); color: var(--c-text);
   /* ---- Filter Bar ---- */
   .filter-bar { gap: 8px; }
   .filter-bar input[type="text"] { min-width: unset; width: 100%; }
+
+  /* ---- Dashboard Header ---- */
+  .dash-header { padding: 12px 14px; gap: 10px; margin-bottom: 14px; }
+  .dash-header__text { width: 100%; }
+  .dash-header__title { font-size: 1rem; white-space: normal; }
+  .dash-header__sub { white-space: normal; font-size: 0.78rem; }
+  .dash-header__actions { width: 100%; justify-content: flex-end; }
 
   /* ---- Bottom Mobile Nav ---- */
   .mobile-nav {
