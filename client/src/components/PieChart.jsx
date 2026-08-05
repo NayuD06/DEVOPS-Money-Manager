@@ -62,12 +62,17 @@ export default function PieChart({ data = [], size = 200 }) {
     new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, width: '100%' }}>
       <svg
-        width={size}
-        height={size}
         viewBox={`0 0 ${size} ${size}`}
-        style={{ overflow: 'visible', filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.15))' }}
+        style={{
+          overflow: 'visible',
+          filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.15))',
+          width: '100%',
+          maxWidth: size,
+          height: 'auto',
+          display: 'block',
+        }}
       >
         {slices.map((s) => {
           const isHovered = hovered === s.i;

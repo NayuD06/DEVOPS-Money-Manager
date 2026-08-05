@@ -364,7 +364,7 @@ body, .app, .app-header, .sidebar, .stat-card, .table-wrap, .budget-card, .featu
   transition: border-color var(--transition), box-shadow var(--transition);
   box-shadow: 0 1px 3px rgba(0,0,0,0.03);
 }
-.filter-bar input[type="text"] { cursor: text; min-width: 240px; }
+.filter-bar input[type="text"] { cursor: text; min-width: 200px; }
 .filter-bar select:hover,
 .filter-bar input[type="month"]:hover,
 .filter-bar input[type="text"]:hover { border-color: var(--c-border2); }
@@ -907,45 +907,58 @@ select.form-control option { background: var(--c-surface); color: var(--c-text);
 .contact-item { display: flex; align-items: center; gap: 14px; font-size: 0.95rem; color: var(--c-text); font-weight: 500; }
 .contact-item span.icon { font-size: 1.35rem; color: var(--c-accent); }
 
-/* ── Mobile Navigation (Bottom) ───────────────────────── */
+/* ── Mobile Navigation (Bottom) ─────────────────────── */
 .mobile-nav {
   display: none;
 }
 
-/* ── Responsive ───────────────────────────────────────── */
+/* ── Responsive ────────────────────────────────── */
+
+/* Tablet (769px – 1024px): Sidebar narrowed */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .layout { grid-template-columns: 220px 1fr; }
+  .main { padding: 20px 24px; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Mobile (max 768px) */
 @media (max-width: 768px) {
-  /* Fix Header Responsive */
+  /* ---- Header ---- */
   .app-header {
-    padding: 12px 16px;
-    gap: 12px;
+    padding: 10px 14px;
+    gap: 8px;
   }
-  .header-brand { gap: 10px; }
-  .header-logo { font-size: 1.6rem; }
-  .header-title { font-size: 1.15rem; line-height: 1.2; }
-  .header-subtitle { display: none; } /* Ẩn subtitle dài trên mobile */
-  
-  .header-actions { gap: 8px; }
-  .btn-theme-toggle span:last-child { display: none; } /* Ẩn chữ Giao diện tối/sáng, chỉ để lại icon */
-  .btn-theme-toggle { padding: 8px 10px; border-radius: 50%; }
-  
-  .btn-login-header {
-    padding: 8px 14px;
-    font-size: 0.85rem;
-    white-space: nowrap;
-  }
+  .header-brand { gap: 8px; }
+  .header-logo { font-size: 1.5rem; }
+  .header-title { font-size: 1.05rem; }
+  .header-subtitle { display: none; }
+  .header-badge { display: none; }
 
-  .user-profile-badge { padding: 4px 8px 4px 4px; gap: 8px; }
+  .header-actions { gap: 6px; }
+  /* Keep only icon for theme toggle */
+  .btn-theme-toggle span:last-child { display: none; }
+  .btn-theme-toggle { padding: 8px; border-radius: 50%; }
+
+  .btn-login-header { padding: 8px 14px; font-size: 0.85rem; white-space: nowrap; }
+  .user-profile-badge { padding: 4px 8px 4px 4px; gap: 6px; }
   .user-info { display: none; }
-  .btn-logout { padding: 4px 6px; }
+  .btn-logout { padding: 4px 6px; font-size: 0.8rem; }
 
-  /* Layout and Table Fixes */
+  /* ---- Layout ---- */
   .layout { grid-template-columns: 1fr; }
   .sidebar { display: none; }
-  /* Padding bottom 85px to avoid content being hidden behind the bottom nav */
-  .main    { padding: 16px; padding-bottom: 85px; }
-  .stats-row { grid-template-columns: repeat(2, 1fr); }
-  
-  /* Mobile Bottom Nav Styles */
+  .main { padding: 14px 14px 90px; gap: 16px; }
+
+  /* ---- Stats Cards ---- */
+  .stats-row { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .stat-card { padding: 16px; }
+  .stat-card__value { font-size: 1.35rem; }
+
+  /* ---- Filter Bar ---- */
+  .filter-bar { gap: 8px; }
+  .filter-bar input[type="text"] { min-width: unset; width: 100%; }
+
+  /* ---- Bottom Mobile Nav ---- */
   .mobile-nav {
     display: flex;
     position: fixed;
@@ -970,16 +983,78 @@ select.form-control option { background: var(--c-surface); color: var(--c-text);
   .mobile-nav__btn.active .icon { transform: translateY(-2px) scale(1.1); filter: grayscale(0%); opacity: 1; }
   .mobile-nav__btn.active .label { color: var(--c-accent); font-weight: 800; }
   
+  /* ---- Expense Table → Card Layout ---- */
   table thead { display: none; }
-  table tbody tr { display: block; padding: 16px; position: relative; border: 1px solid var(--c-border); border-radius: var(--radius-sm); margin-bottom: 12px; }
-  table tbody td { display: block; padding: 4px 0; border: none; }
-  table tbody td:last-child { text-align: left; margin-top: 12px; }
+  table tbody tr {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px 16px;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+    background: var(--c-surface);
+    box-shadow: var(--shadow-sm);
+  }
+  table tbody tr:last-child { border-bottom: 1px solid var(--c-border); }
+  table tbody td {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 2px 0;
+    border: none;
+    font-size: 0.88rem;
+    text-align: left;
+  }
+  table tbody td::before {
+    content: attr(data-label);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--c-text-3);
+    letter-spacing: 0.05em;
+    min-width: 72px;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+  table tbody td:first-child {
+    font-size: 0.8rem;
+    color: var(--c-text-3);
+    border-bottom: 1px dashed var(--c-border);
+    padding-bottom: 8px;
+    margin-bottom: 4px;
+  }
+  table tbody td:last-child { text-align: left; margin-top: 4px; }
   .td-actions { justify-content: flex-start; }
+  .td-desc { max-width: unset; }
+
+  /* ---- Misc ---- */
   .hide-mobile { display: none !important; }
+  .section-title { font-size: 1rem; }
+  .budget-card { padding: 18px; }
+  .toast { min-width: unset; width: calc(100vw - 32px); max-width: unset; }
+  .toast-container { right: 16px; left: 16px; bottom: 16px; }
+  .hero-title { font-size: 2rem; }
+  .hero-subtitle { font-size: 0.98rem; }
+  .hero-section { padding: 36px 16px 28px; }
+  .hero-section::before { width: 100%; }
+  .features-grid { grid-template-columns: 1fr; gap: 16px; }
+  .about-contact-grid { grid-template-columns: 1fr; gap: 20px; }
+  .welcome-page { gap: 32px; padding-bottom: 40px; }
 }
 
-@media (max-width: 500px) {
+/* Extra small (max 480px) */
+@media (max-width: 480px) {
   .stats-row { grid-template-columns: 1fr; }
-  .auth-tabs { display: flex; flex-direction: column; }
-  .auth-modal { padding: 24px 20px; }
+  .stat-card__value { font-size: 1.2rem; }
+  .hero-title { font-size: 1.6rem; }
+  .filter-bar select,
+  .filter-bar input[type="month"] { width: 100%; }
+  .auth-modal { padding: 24px 16px; }
+  .auth-tabs { display: flex; flex-direction: column; gap: 4px; }
+  .modal { max-width: 100%; }
+  .info-box { padding: 20px; }
+  .feature-card { padding: 22px; }
+  .section-header { flex-direction: column; align-items: flex-start; }
+  .filter-bar { width: 100%; }
 }

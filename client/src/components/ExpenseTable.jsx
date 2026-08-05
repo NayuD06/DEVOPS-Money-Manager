@@ -117,8 +117,8 @@ export default function ExpenseTable({ expenses, loading, onEdit, onDelete }) {
                 const isIncome = exp.type === 'income';
                 return (
                   <tr key={exp._id}>
-                    <td className="td-date">{fmtDate(exp.date)}</td>
-                    <td>
+                    <td className="td-date" data-label="Ngày">{fmtDate(exp.date)}</td>
+                    <td data-label="Mô tả">
                       <div className="td-desc">
                         <span
                           style={{
@@ -138,11 +138,12 @@ export default function ExpenseTable({ expenses, loading, onEdit, onDelete }) {
                       </div>
                       {exp.note && <div className="td-note">💬 {exp.note}</div>}
                     </td>
-                    <td>
+                    <td data-label="Danh mục">
                       <CategoryBadge name={exp.category} />
                     </td>
                     <td
                       className="td-amount"
+                      data-label="Số tiền"
                       style={{
                         color: isIncome ? '#10b981' : '#ef4444',
                         fontWeight: 700,
@@ -151,7 +152,7 @@ export default function ExpenseTable({ expenses, loading, onEdit, onDelete }) {
                     >
                       {isIncome ? '+' : '-'}{fmt(exp.amount)}
                     </td>
-                    <td>
+                    <td data-label="Thao tác">
                       <div className="td-actions">
                         <button
                           className="btn-icon"
