@@ -30,7 +30,7 @@ export default function Header({ user, theme, onToggleTheme, onOpenAuth, onLogou
           <div className="user-profile-badge" onClick={onOpenProfile} style={{ cursor: 'pointer' }} title="Cập nhật hồ sơ cá nhân">
             <div className="user-avatar" style={{ overflow: 'hidden', padding: 0 }}>
               {user.avatar ? (
-                <img src={`${API_URL}${user.avatar}`} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src={user.avatar.startsWith('data:image/') ? user.avatar : `${API_URL}${user.avatar}`} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
                 user.username.charAt(0).toUpperCase()
               )}

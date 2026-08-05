@@ -66,16 +66,28 @@ app.use((err, req, res, next) => {
 });
 
 // ── Database + Start ──────────────────────────────────────
-async function start() {
+let isConnected = false;
+async function connectDB() {
+  if (isConnected) return;
   try {
     await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/spendwise');
+    isConnected = true;
     console.log('✅ MongoDB connected');
+  } catch (err) {
+    console.error('❌ Failed to connect to MongoDB:', err.message);
+  }
+}
 
+// Nếu chạy trên Vercel, Vercel sẽ tự gọi app (Serverless), ta chỉ cần connectDB
+if (process.env.VERCEL) {
+  connectDB();
+} else if (process.env.NODE_ENV !== 'test') {
+  // Chạy local hoặc trên VPS
+  connectDB().then(() => {
     const server = app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Server running on port ${PORT} (0.0.0.0)`);
     });
 
-    // Graceful shutdown
     const shutdown = async (signal) => {
       console.log(`\n${signal} received — shutting down gracefully`);
       server.close(async () => {
@@ -84,18 +96,9 @@ async function start() {
         process.exit(0);
       });
     };
-
     process.on('SIGTERM', () => shutdown('SIGTERM'));
     process.on('SIGINT',  () => shutdown('SIGINT'));
-
-  } catch (err) {
-    console.error('❌ Failed to start server:', err.message);
-    process.exit(1);
-  }
-}
-
-if (process.env.NODE_ENV !== 'test') {
-  start();
+  });
 }
 
 // Export app for testing (without starting the server)

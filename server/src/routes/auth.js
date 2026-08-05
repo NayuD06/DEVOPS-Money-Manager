@@ -6,21 +6,8 @@ const fs = require('fs');
 const User = require('../models/User');
 const { authMiddleware, JWT_SECRET } = require('../middleware/auth');
 
-// Cấu hình multer để upload ảnh
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadDir = path.join(__dirname, '../../public/uploads');
-    // Đảm bảo thư mục tồn tại trên server (sửa lỗi ENOENT trên VPS)
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, 'avatar-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+// Cấu hình multer để upload ảnh (Lưu vào bộ nhớ đệm RAM để chạy được trên Vercel)
+const storage = multer.memoryStorage();
 
 const upload = multer({ 
   storage,
@@ -157,9 +144,11 @@ router.put('/profile', authMiddleware, upload.single('avatar'), async (req, res)
       user.password = newPassword;
     }
 
-    // Upload avatar
+    // Upload avatar (Base64 để chạy trên Vercel)
     if (req.file) {
-      user.avatar = `/uploads/${req.file.filename}`;
+      const b64 = req.file.buffer.toString('base64');
+      const mimeType = req.file.mimetype;
+      user.avatar = `data:${mimeType};base64,${b64}`;
     }
 
     await user.save();
